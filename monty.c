@@ -1,27 +1,43 @@
 #include "monty.h"
 
+#include "monty.h"
 /**
- * main - main function
- * @argc: argument count
- * @argv: pointer to array of args
- * Return: EXIT_SUCCESS else EXIT_FAILURE
- */
-
-	int main(int argc, char *argv[])
+* main - main function
+* @argc: number of arguments
+* @argv: arguments
+* Return: 0
+*/
+int main(char argc, char **argv)
 {
-	if (argc != 2)
+int i = 0;
+int *stack = NULL;
+FILE *fp;
+char *line = NULL;
+size_t len = 0;
+ssize_t read;
+unsigned int line_number = 0;
+if (argc != 2)
 {
-	fprintf(stderr, "USAGE: monty file\12");
-	exit(EXIT_FAILURE);
+fprintf(stderr, "USAGE: monty file\n");
+exit(EXIT_FAILURE);
 }
-
-	globales.fp = fopen(argv[1], "r");
-	if (!globales.fp)
+fp = fopen(argv[1], "r");
+while ((read = getline(&line, &len, fp)) != -1)
 {
-	fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
-	exit(EXIT_FAILURE);
+line_number++;
+if (line[0] == '#')
+continue;
+if (line[0] == '\n')
+continue;
 }
-	readfile();
-	fclose(globales.fp);
-	return (EXIT_SUCCESS);
+printf("%d\t", line_number);
+printf("%s\n", line);
+while (*line)
+{
+opcode_lookup(line, &stack, line_number);
+line++;
+}
+free(line);
+fclose(fp);
+return (0);
 }
