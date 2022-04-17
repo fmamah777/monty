@@ -1,21 +1,13 @@
 #include "monty.h"
 
-
 /**
- * free_stack - free space in the stack
- * @stack: pointer to the stack to be freed
- * Return: nothing
+ * free_list - Frees the list
+ *
+ * Return: None
  */
-
-void free_stack(stack_t *stack)
+void free_list(void)
 {
-stack_t *tmp = NULL;
-
-while (stack != NULL)
-{
-tmp = stack;
-stack = stack->next;
-free(tmp);
-}
-free(stack);
+	free_cells(tracker.head);
+	tracker.head = NULL;
+	tracker.node_count = 0;
 }

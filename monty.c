@@ -1,43 +1,39 @@
 #include "monty.h"
 
-#include "monty.h"
+tracker_t tracker;
+
 /**
-* main - main function
-* @argc: number of arguments
-* @argv: arguments
-* Return: 0
-*/
-int main(char argc, char **argv)
+ * cleanup - Cleanup, cleanup
+ *
+ * Return: None
+ */
+void cleanup(void)
 {
-int i = 0;
-int *stack = NULL;
-FILE *fp;
-char *line = NULL;
-size_t len = 0;
-ssize_t read;
-unsigned int line_number = 0;
-if (argc != 2)
-{
-fprintf(stderr, "USAGE: monty file\n");
-exit(EXIT_FAILURE);
+	if (tracker.node_count > 0)
+		free_list();
+	if (tracker.buffer)
+		free(tracker.buffer);
+	if (tracker.file)
+		fclose(tracker.file);
 }
-fp = fopen(argv[1], "r");
-while ((read = getline(&line, &len, fp)) != -1)
+
+/**
+ * main - Entry Point
+ * @argc: Number of arguments
+ * @argv: The arguments
+ *
+ * Return: 0
+ */
+int main(int argc, char **argv)
 {
-line_number++;
-if (line[0] == '#')
-continue;
-if (line[0] == '\n')
-continue;
-}
-printf("%d\t", line_number);
-printf("%s\n", line);
-while (*line)
-{
-opcode_lookup(line, &stack, line_number);
-line++;
-}
-free(line);
-fclose(fp);
-return (0);
+	FILE *bytecode_file = NULL;
+
+	check_argument_error(argc);
+	bytecode_file = fopen(argv[1], "r");
+	if (!bytecode_file)
+		execute_file_read_error(argv[1]);
+	atexit(cleanup);
+	init_tracker(bytecode_file);
+	parse_file(bytecode_file);
+	return (0);
 }
